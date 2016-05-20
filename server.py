@@ -4,8 +4,9 @@
 from flask import Flask, session, render_template, request, redirect, jsonify
 import json, os, requests
 
-from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
+from os.path import join, dirname
+from dotenv import load_dotenv
+dotenv_path = join(dirname(__file__), '.env')
 
 from models import db, Athlete
 
@@ -61,10 +62,9 @@ club_activities = None
 
 @app.route("/next")
 def next():
-	global activity_counter
+	global activity_counter, club_activities
 
 	if not club_activities:
-		global club_activities
 		access_token = Athlete.select()[0].access_token
 		club_activities = requests.get('https://www.strava.com/api/v3/clubs/198580/activities?access_token='+ access_token).json()
 
