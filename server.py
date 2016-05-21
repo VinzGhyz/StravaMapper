@@ -70,10 +70,16 @@ def next():
 		club_activities = requests.get('https://www.strava.com/api/v3/clubs/198580/activities?access_token='+ access_token).json()
 
 	current_activity = club_activities[activity_counter]
+	# if current_activity['type'] != "Run" and current_activity['type'] != "Ride":
+	# 	app.logger.debug('Stumbled upon an activity of type: %s, moving on to the next!' % current_activity['type'])
+	# 	activity_counter += 1
+	# 	if activity_counter == len(club_activities): activity_counter = 0
+	# 	next()
+
 	access_token = Athlete.get(Athlete.user_id == 14511295).access_token
+	r = requests.get('https://www.strava.com/api/v3/activities/%s/streams/latlng,time?access_token=%s' % ('580277459', access_token))
 	#access_token = Athlete.get(Athlete.user_id == current_activity['athlete']['id']).access_token
 	#r = requests.get('https://www.strava.com/api/v3/activities/%s/streams/latlng,time?access_token=%s' % (current_activity['id'], access_token))
-	r = requests.get('https://www.strava.com/api/v3/activities/%s/streams/latlng,time?access_token=%s' % ('580277459', access_token))
 
 	activity_counter += 1
 	if activity_counter == len(club_activities): activity_counter = 0
