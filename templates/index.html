@@ -31,7 +31,7 @@
 		.setView([50.828382, 4.383977], 13);
 
 	// Disable drag and zoom handlers.
-	map.dragging.disable();
+	//map.dragging.disable();
 	map.touchZoom.disable();
 	map.doubleClickZoom.disable();
 	map.scrollWheelZoom.disable();
@@ -76,7 +76,9 @@
 
 				var route = L.polyline([]).addTo(map);
 				var pointsAdded = 0;
-				var minutes, hours;
+				var minutes, hours, delay;
+
+				var speedup = (data['type'] == "Ride") ? 2 : 1;
 
 				add();
 
@@ -92,7 +94,11 @@
 							latlng[pointsAdded][0],
 							latlng[pointsAdded][1]));
 
-					if (++pointsAdded < latlng.length) window.setTimeout(add, 1);
+					if (++pointsAdded < latlng.length) {
+						delay = duration[pointsAdded] - duration[pointsAdded-1]
+						window.setTimeout(add, delay / speedup);
+					}
+
 					if (pointsAdded == latlng.length) window.setTimeout(function() {
 						next_activity();
 						map.removeLayer(route);
