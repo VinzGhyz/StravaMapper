@@ -1,1 +1,51 @@
-<a href="{{ strava_auth_url }}">Login with Strava</a>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8 />
+	<title>StravaMapper</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+	<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300' rel='stylesheet' type='text/css'>
+	<link href='static/style.css' rel='stylesheet' />
+	<link rel="icon" href="static/favicon.png" type="image/png">
+</head>
+<body class="light">
+
+	<div id="hud">
+		<div><h1 class="tag">Athlete</h1><span id="athlete" class="metric">John Applestrava</span></div>
+		<div><h1 class="tag">Distance</h1><span id="distance" class="metric">14.43km</span></div>
+		<div><h1 class="tag">Duration</h1><span id="duration" class="metric">1h12m</span></div>
+		<div><h1 class="tag">About</h1><span id="title" class="metric text-capped">Quick run in the city</span></div>
+	</div>
+	<div id='map'></div>
+
+	<div class="wrapper">
+		<a href="{{ strava_auth_url }}" class="btn btn-strava">Login with Strava</a>
+	</div>
+
+	<script>
+	L.mapbox.accessToken = 'pk.eyJ1Ijoib3dzIiwiYSI6ImNpb2VlNWZmZDAwMjh2Z2x4ZnF0YmxubW4ifQ.Nd6pDZYlmegZhs89ySBHJw';
+	var map = L.mapbox.map('map','', {
+		zoomControl: false
+		})
+		.setView([50.828382, 4.383977], 13);
+
+	// Disable drag and zoom handlers.
+	map.dragging.disable();
+	map.touchZoom.disable();
+	map.doubleClickZoom.disable();
+	map.scrollWheelZoom.disable();
+	map.keyboard.disable();
+
+	// Disable tap handler, if present.
+	if (map.tap) map.tap.disable();
+
+	//L.mapbox.styleLayer('mapbox://styles/ows/cioffrpsb0040czmaeuvzht92').addTo(map);
+	L.mapbox.styleLayer('mapbox://styles/ows/ciogg6erj0005com6t11sj9q5').addTo(map);
+	//L.mapbox.styleLayer('mapbox://styles/mapbox/light-v8').addTo(map);
+	</script>
+
+</body>
+</html>

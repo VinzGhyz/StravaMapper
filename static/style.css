@@ -4,6 +4,37 @@ body {
 	font-family: 'Roboto Slab', serif;
 }
 
+.wrapper {
+    display: flex;
+    justify-content: center;
+    /* flex-direction: row; */
+    align-items: center;
+    /* align-self: stretch; */
+    height: 100vh;
+    /* z-index: 3; */
+    position: absolute;
+    width: 100%;
+}
+
+.btn-strava, .btn-strava:visited {
+  background-color: #FF6D18;
+  color: #fefefe;
+  padding: 6px 12px;
+  border: 1px solid hsla(32,100%,55%,.5);
+  text-shadow: 0 -1px rgba(0,0,0,0.5);
+  transition: .3s ease all;
+}
+
+.btn-strava:hover, .btn-strava:active {
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.16);
+  color: #fefefe;
+}
+
+.btn-strava:focus {
+  box-shadow: inset 0 3px 6px rgba(0,0,0,0.16), inset 0 3px 6px rgba(0,0,0,0.23);
+  color: #fefefe;
+}
+
 #map {
 	position: absolute;
 	top: 0;
