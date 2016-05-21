@@ -1,93 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset=utf-8 />
-<title>StravaMapper</title>
-<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-<script src='https://code.jquery.com/jquery-2.2.3.min.js'></script>
-<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
-<script src='static/polyline.js'></script>
-<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
-<link href='static/style.css' rel='stylesheet' />
-<link rel="icon" href="static/favicon.png" type="image/png">
+	<meta charset=utf-8 />
+	<title>StravaMapper</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+	<script src='https://code.jquery.com/jquery-2.2.3.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
+	<script src='static/polyline.js'></script>
+	<link href='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.css' rel='stylesheet' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link href='https://fonts.googleapis.com/css?family=Roboto+Slab:400,700,300' rel='stylesheet' type='text/css'>
+	<link href='static/style.css' rel='stylesheet' />
+	<link rel="icon" href="static/favicon.png" type="image/png">
 </head>
-<body>
+<body class="light">
 
-<div id="hud">
-    <h3><b>Runner</b> <span id="athlete"></span></h3>
-    <h3><b>Distance</b> <span id="distance">0.00</span>km</h3>
-    <h3><b>Duration</b> <span id="duration">0'0"</span></h3>
-    <h3><b>Title</b> <span id="title"></span></h3>
-</div>
-<div id='map'></div>
+	<div id="hud">
+		<div><h1 class="tag">Athlete</h1><span id="athlete" class="metric"></span></div>
+		<div><h1 class="tag">Distance</h1><span id="distance" class="metric">0.00km</span></div>
+		<div><h1 class="tag">Duration</h1><span id="duration" class="metric">0h0m</span></div>
+		<div><h1 class="tag">Title</h1><span id="title" class="metric text-capped"></span></div>
+	</div>
+	<div id='map'></div>
 
-<script>
-L.mapbox.accessToken = 'pk.eyJ1Ijoib3dzIiwiYSI6ImNpb2VlNWZmZDAwMjh2Z2x4ZnF0YmxubW4ifQ.Nd6pDZYlmegZhs89ySBHJw';
-var map = L.mapbox.map('map')
-    .setView([50.828382, 4.383977], 13);
+	<script>
+	L.mapbox.accessToken = 'pk.eyJ1Ijoib3dzIiwiYSI6ImNpb2VlNWZmZDAwMjh2Z2x4ZnF0YmxubW4ifQ.Nd6pDZYlmegZhs89ySBHJw';
+	var map = L.mapbox.map('map','', {
+		zoomControl: false
+		})
+		.setView([50.828382, 4.383977], 13);
 
-//L.mapbox.styleLayer('mapbox://styles/ows/cioffrpsb0040czmaeuvzht92').addTo(map);
-L.mapbox.styleLayer('mapbox://styles/mapbox/light-v8').addTo(map);
+	// Disable drag and zoom handlers.
+	map.dragging.disable();
+	map.touchZoom.disable();
+	map.doubleClickZoom.disable();
+	map.scrollWheelZoom.disable();
+	map.keyboard.disable();
 
-$(document).ready(function() {
-    next_activity();
+	// Disable tap handler, if present.
+	if (map.tap) map.tap.disable();
 
-    function next_activity() {
-        $.getJSON('/next', function(data) {
-            var latlng, distance, duration;
-            console.log(data);
+	//L.mapbox.styleLayer('mapbox://styles/ows/cioffrpsb0040czmaeuvzht92').addTo(map);
+	L.mapbox.styleLayer('mapbox://styles/ows/ciogg6erj0005com6t11sj9q5').addTo(map);
+	//L.mapbox.styleLayer('mapbox://styles/mapbox/light-v8').addTo(map);
 
-            if (data['type'] != "Run" && data['type'] != "Ride") {
-                next_activity();
-                return;
-            }
+	$(document).ready(function() {
+		next_activity();
 
-            data['streams'].forEach(function(item) {
-                if (item.type == 'latlng') { latlng = item['data']; }
-                if (item.type == 'distance') { distance = item['data']; }
-                if (item.type == 'time') { duration = item['data']; }
-            });
+		function next_activity() {
+			$.getJSON('/next', function(data) {
+				var latlng, distance, duration;
+				console.log(data);
 
-            var $distance = $('#distance'),
-                $duration = $('#duration'),
-                $athlete = $('#athlete'),
-                $title = $('#title');;
+				if ((data['type'] != "Run" && data['type'] != "Ride") || (!data['map']['summary_polyline']))  {
+					next_activity();
+					return;
+				}
 
-            $athlete.text(data['athlete']['firstname']);
-            $title.text(data['name']);
+				data['streams'].forEach(function(item) {
+					if (item.type == 'latlng') { latlng = item['data']; }
+					if (item.type == 'distance') { distance = item['data']; }
+					if (item.type == 'time') { duration = item['data']; }
+				});
 
-            var summaryPolyline = L.polyline(polyline.decode(data['map']['summary_polyline']));
-            map.fitBounds(summaryPolyline.getBounds());
+				var $distance = $('#distance'),
+				$duration = $('#duration'),
+				$athlete = $('#athlete'),
+				$title = $('#title');;
 
-            var route = L.polyline([]).addTo(map);
-            var pointsAdded = 0;
-            var minutes, hours;
+				$athlete.text(data['athlete']['firstname']);
+				$title.text(data['name']);
 
-            add();
+				var summaryPolyline = L.polyline(polyline.decode(data['map']['summary_polyline']));
+				map.fitBounds(summaryPolyline.getBounds());
 
-            function add() {
-                $distance.text(Math.round(distance[pointsAdded]/100)/10);
-               
-                minutes = Math.floor(duration[pointsAdded]/60)%60;
-                hours = Math.floor(duration[pointsAdded]/3600);
-                $duration.text(hours +'\''+ minutes +'"');
+				var route = L.polyline([]).addTo(map);
+				var pointsAdded = 0;
+				var minutes, hours;
 
-                route.addLatLng(
-                    L.latLng(
-                        latlng[pointsAdded][0],
-                        latlng[pointsAdded][1]));
+				add();
 
-                if (++pointsAdded < latlng.length) window.setTimeout(add, 1);
-                if (pointsAdded == latlng.length) window.setTimeout(function() {
-                    next_activity();
-                    map.removeLayer(route);
-                }, 600);
-            }
-        });
-    }
-});
-</script>
+				function add() {
+					$distance.text(Math.round(distance[pointsAdded]/100)/10 +'km');
 
+					minutes = Math.floor(duration[pointsAdded] / 60) % 60;
+					hours = Math.floor(duration[pointsAdded] / 3600);
+					$duration.text(hours +'h'+ minutes +'m');
+
+					route.addLatLng(
+						L.latLng(
+							latlng[pointsAdded][0],
+							latlng[pointsAdded][1]));
+
+					if (++pointsAdded < latlng.length) window.setTimeout(add, 1);
+					if (pointsAdded == latlng.length) window.setTimeout(function() {
+						next_activity();
+						map.removeLayer(route);
+					}, 600);
+				}
+			});
+		}
+	});
+	</script>
 
 </body>
 </html>

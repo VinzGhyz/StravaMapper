@@ -1,5 +1,15 @@
-body { margin:0; padding:0; }
-#map { position:absolute; top:0; bottom:0; width:100%; }
+body {
+	margin: 0;
+	padding: 0;
+	font-family: 'Roboto Slab', serif;
+}
+
+#map {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	width: 100%;
+}
 
 #hud {
 	position: absolute;
@@ -7,5 +17,30 @@ body { margin:0; padding:0; }
 	display: flex;
 	justify-content: space-around;
 	width: 100%;
-	background: red;
+	background: linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,0));
+	padding: 10px 0 20px 0;
+}
+
+h1.tag {
+    margin: 0;
+    font-size: 1.5em;
+    color: white;
+    text-shadow: 0 1px rgba(0,31,63,.75);
+    font-weight: 100;
+    line-height: normal;
+}
+
+span.metric {
+    color: #ED4D3B;
+    font-weight: 600;
+    text-shadow: 0 1px rgba(44,62,80,.25);
+    font-size: 1.75em;
+}
+
+.text-capped {
+	text-overflow: ellipsis;
+	max-width: 50vw;
+	overflow: hidden;
+	display: block;
+	white-space: nowrap;
 }
